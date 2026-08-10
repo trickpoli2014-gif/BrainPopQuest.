@@ -1,0 +1,38 @@
+name: Build BrainPop Quest APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar projeto
+        uses: actions/checkout@v4
+
+      - name: Descompactar BrainPop Quest
+        run: |
+          unzip -o BrainPop_Quest_3.0_Android_Cloud.zip -d game
+          ls -la game
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Gerar APK
+        working-directory: game
+        run: gradle assembleDebug
+
+      - name: Salvar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BrainPop-Quest-3.0-APK
+          path: game/app/build/outputs/apk/debug/app-debug.apk
